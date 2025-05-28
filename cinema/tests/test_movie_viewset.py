@@ -46,14 +46,14 @@ class MovieViewSetTests(APITestCase):
 
     def test_list_movies(self):
         self.client.force_authenticate(user=self.user)
-        url = reverse("cinema:movies-list")
+        url = reverse("cinema:movie-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
 
     def test_filter_movies_by_title(self):
         self.client.force_authenticate(user=self.user)
-        url = reverse("cinema:movies-list") + "?title=funny"
+        url = reverse("cinema:movie-list") + "?title=funny"
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
@@ -61,7 +61,7 @@ class MovieViewSetTests(APITestCase):
 
     def test_filter_movies_by_genres(self):
         self.client.force_authenticate(user=self.user)
-        url = reverse("cinema:movies-list") + f"?genres={self.genre2.id}"
+        url = reverse("cinema:movie-list") + f"?genres={self.genre2.id}"
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
@@ -69,7 +69,7 @@ class MovieViewSetTests(APITestCase):
 
     def test_filter_movies_by_actors(self):
         self.client.force_authenticate(user=self.user)
-        url = reverse("cinema:movies-list") + f"?actors={self.actor1.id}"
+        url = reverse("cinema:movie-list") + f"?actors={self.actor1.id}"
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
@@ -77,7 +77,7 @@ class MovieViewSetTests(APITestCase):
 
     def test_retrieve_movie_detail(self):
         self.client.force_authenticate(user=self.user)
-        url = reverse("cinema:movies-detail", args=[self.movie1.id])
+        url = reverse("cinema:movie-detail", args=[self.movie1.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["title"], "Funny Movie")
@@ -85,7 +85,7 @@ class MovieViewSetTests(APITestCase):
         self.assertIn("actors", response.data)
 
     def test_create_movie_denied_for_anon(self):
-        url = reverse("cinema:movies-list")
+        url = reverse("cinema:movie-list")
         data = {
             "title": "New Movie",
             "description": "Description here",
@@ -99,7 +99,7 @@ class MovieViewSetTests(APITestCase):
 
     def test_create_movie_allowed_for_admin(self):
         self.client.force_authenticate(user=self.admin)
-        url = reverse("cinema:movies-list")
+        url = reverse("cinema:movie-list")
         data = {
             "title": "New Movie",
             "description": "Description here",
@@ -113,6 +113,6 @@ class MovieViewSetTests(APITestCase):
 
     def test_upload_image_denied_for_non_admin(self):
         self.client.force_authenticate(user=self.user)
-        url = reverse("cinema:movies-upload-image", args=[self.movie1.id])
+        url = reverse("cinema:movie-upload-image", args=[self.movie1.id])
         response = self.client.post(url, {}, format="multipart")
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
